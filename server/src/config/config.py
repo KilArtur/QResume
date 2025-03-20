@@ -1,9 +1,15 @@
 import os
+import yaml
 from dataclasses import dataclass, fields, is_dataclass
 from typing import Literal
 
-import yaml
 
+
+@dataclass
+class MistralConfig:
+    api_key_mistral: str
+    model_mistral_chat: str
+    model_mistral_ocr: str
 
 @dataclass
 class GptConfig:
@@ -44,16 +50,7 @@ class RecalculateConfig:
 
 @dataclass
 class Config:
-    profile: str
-    server_port: int
-    prometheus_port: int
-    api_schema_path: str
-    gpt_primary: GptConfig
-    gpt_fallback: GptConfig
-    logging: LoggingConfig
-    recalculate: RecalculateConfig
-    threshold_no_human: float
-    no_human_model_type: str
+    mistral: MistralConfig
 
 
 class ConfigLoader:
@@ -74,7 +71,6 @@ class ConfigLoader:
     def load_config(self, cls=Config) -> Config:
         profile = os.environ.get('PROFILE', 'dev')
 
-        self.__load_if_exists("/etc/cyntai-server/config.yml")
         self.__load_if_exists("./config-local.yml")
         self.__load_if_exists(f"./config-{profile}.yml")
         self.__load_if_exists("./config.yml", required=True)

@@ -1,0 +1,4 @@
+mistral:
+  api_key_mistral: FhHDcEjtU8ZHEGgOkoQlg4Ujei7KxcJW
+  model_mistral_chat: pixtral-12b-latest
+  model_mistral_ocr: mistral-ocr-latest
