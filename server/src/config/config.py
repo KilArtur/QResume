@@ -12,6 +12,12 @@ class MistralConfig:
     model_mistral_ocr: str
 
 @dataclass
+class GPTConfig:
+    api_key: str
+    base_url: str
+    model: str
+
+@dataclass
 class GptConfig:
     url: str
     token: str
@@ -51,6 +57,7 @@ class RecalculateConfig:
 @dataclass
 class Config:
     mistral: MistralConfig
+    gpt: GPTConfig
 
 
 class ConfigLoader:
