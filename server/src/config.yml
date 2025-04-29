@@ -3,7 +3,22 @@ mistral:
   model_mistral_chat: pixtral-12b-latest
   model_mistral_ocr: mistral-ocr-latest
 
-gpt:
+llm:
   api_key: 1000167193.110670.3AUKPKDG7sGtAFKT2NIqns5IwTUKnZg6GvrBz317
   base_url: https://caila.io/api/adapters/openai
-  model: just-ai/openai-proxy/gpt-4o-mini
+  model: just-ai/openai-proxy/gpt-4o-mini # just-ai/open-router/deepseek/deepseek-chat
+
+logging:
+    app_name: QResume
+    graylog:
+      enabled: false
+      udp: false
+      host: "localhost"  # это затыча
+      port: 12201        # и это тоже
+    console:
+      enabled: true
+    root_level: INFO
+    levels:
+      httpx: WARN
+      openai: WARN
+      uvicorn.access: WARN
