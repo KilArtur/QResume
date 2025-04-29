@@ -1,8 +1,8 @@
 from fastapi import APIRouter
-from api.welcome import router as welcome_router
-from api.health import router as health_router
-from api.hello import router as hello_router
-from api.skills import router as skills_router
+from endpoints.api.welcome import router as welcome_router
+from endpoints.api.health import router as health_router
+from endpoints.api.hello import router as hello_router
+from endpoints.api.skills import router as skills_router
 
 main_router = APIRouter()
 

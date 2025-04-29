@@ -2,3 +2,4 @@
 __pycache__
 .env\
 server/src/config.yml
+server/src/services/prompts.yml

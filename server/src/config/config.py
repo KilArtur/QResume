@@ -12,19 +12,10 @@ class MistralConfig:
     model_mistral_ocr: str
 
 @dataclass
-class GPTConfig:
+class LLMConfig:
     api_key: str
     base_url: str
     model: str
-
-@dataclass
-class GptConfig:
-    url: str
-    token: str
-    mode: Literal["openai", "vllm"]
-    model_matching: str
-    model_recalculate: str
-
 
 @dataclass
 class LoggingConfigGraylog:
@@ -49,15 +40,10 @@ class LoggingConfig:
 
 
 @dataclass
-class RecalculateConfig:
-    lower_limit: float
-    upper_limit: float
-
-
-@dataclass
 class Config:
     mistral: MistralConfig
-    gpt: GPTConfig
+    llm: LLMConfig
+    logging: LoggingConfig
 
 
 class ConfigLoader:
@@ -115,7 +101,6 @@ class ConfigLoader:
                 kwargs[field.name] = self.__create_class_from_values(field.type, get_value_func,
                                                                      f"{outer_name}{field.name}.")
             else:
-                # Получаем значение для обычного поля
                 fname = f"{outer_name}{field.name}"
                 val = get_value_func(fname)
                 if val is None:

@@ -9,8 +9,6 @@ router = APIRouter()
 @router.get("/skills")
 async def hello():
     ocr_service = OCRService()
-    file_path = './data/Gerbylev.pdf'
+    file_path = './data/Kildiyarov.pdf'
     result, input_token, output_token = await ocr_service.process_file(file_path)
-
-    parsed_result = json.loads(result)
-    return parsed_result
+    return result
