@@ -1,9 +1,0 @@
-mistral:
-  api_key_mistral: FhHDcEjtU8ZHEGgOkoQlg4Ujei7KxcJW
-  model_mistral_chat: pixtral-12b-latest
-  model_mistral_ocr: mistral-ocr-latest
-
-gpt:
-  api_key: 1000167193.110670.3AUKPKDG7sGtAFKT2NIqns5IwTUKnZg6GvrBz317
-  base_url: https://caila.io/api/adapters/openai
-  model: just-ai/openai-proxy/gpt-4o-mini
