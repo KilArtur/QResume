@@ -4,3 +4,8 @@ uvicorn
 PyMuPDF
 ocrmypdf
 openai
+frontend
+pymupdf
+pydantic
+jinja2
+graypy

@@ -1,12 +1,12 @@
 import os
 import json
 import asyncio
-import ocrmypdf
+import contextlib
 from typing import Type
 
 import fitz
 from pydantic import BaseModel
-import contextlib
+import ocrmypdf
 from openai import AsyncOpenAI
 
 from config.config import CONFIG
@@ -56,12 +56,13 @@ class OCRService:
     async def fetch_completion(self, prompt: str, model: str, args=None, response_class=Type[BaseModel] | None) -> str:
         self.request_counter += 1
         request_id = self.request_counter
-        log.info(f"Текст к {self.model.rsplit('/', 1)[-1]} ({request_id}): {prompt}")
+        log.info(f"Текст к {self.model.rsplit('/', 1)[-1]} ({request_id}): {prompt.split('Текст резюме специалиста в формате строки')[-1]}")
 
         counter = 0
         while True:
             try:
                 res = await self.__fetch_completion(prompt, model, args or {}, response_class=response_class)
+                log.info(f"Ответ от {self.model.rsplit('/', 1)[-1]} ({request_id}): {res}")
                 return res
             except Exception as e:
                 counter += 1
@@ -115,7 +116,6 @@ if __name__ == "__main__":
 
     answer, input_tokens, output_tokens = asyncio.run(service.process_file(file_path))
 
-    log.info(type(answer))
     log.info(f'Ответ: {json.dumps(answer, indent=4, ensure_ascii=False)}')
     log.info(f'Входных токенов: {input_tokens}')
     log.info(f'Выходных токенов: {output_tokens}')
