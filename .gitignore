@@ -1,6 +1,13 @@
+#system
 .venv
 .idea
 __pycache__
 .env\
+
+#project
 server/src/config.yml
-#server/src/services/prompts.yml
+
+#aider
+.aider*
+CONVENTIONS.md
+.env.aider

@@ -1,0 +1,8 @@
+read: [CONVENTIONS.md]
+
+dark-mode: true
+auto-commits: false
+check-update: false
+commit: false
+env-file: .env.aider
+model: openrouter/anthropic/claude-3.7-sonnet
