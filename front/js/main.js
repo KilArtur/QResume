@@ -1,3 +1,54 @@
+// Функция для подготовки данных к формату собеседования
+function prepareInterviewData(data) {
+    const questions = [];
+    
+    if (Array.isArray(data)) {
+        // Формат массива объектов с технологиями
+        data.forEach(tech => {
+            const technology = tech.technology || tech.name_technology || 'Неизвестная технология';
+            
+            if (Array.isArray(tech.questions)) {
+                tech.questions.forEach(q => {
+                    questions.push({
+                        technology: technology,
+                        question: q,
+                        answer: ''
+                    });
+                });
+            } else {
+                // Ищем вопросы в формате question1, question2...
+                for (let i = 1; i <= 5; i++) {
+                    const key = `question${i}`;
+                    if (tech[key] && typeof tech[key] === 'string') {
+                        questions.push({
+                            technology: technology,
+                            question: tech[key],
+                            answer: ''
+                        });
+                    }
+                }
+            }
+        });
+    } else if (typeof data === 'object') {
+        // Формат объекта, где ключи - названия технологий
+        for (const tech in data) {
+            if (Array.isArray(data[tech])) {
+                // Ограничиваем до 5 вопросов на технологию
+                const techQuestions = data[tech].slice(0, 5);
+                techQuestions.forEach(q => {
+                    questions.push({
+                        technology: tech,
+                        question: q,
+                        answer: ''
+                    });
+                });
+            }
+        }
+    }
+    
+    return questions;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const resumeForm = document.getElementById('resumeForm');
     const resumeFile = document.getElementById('resumeFile');
@@ -8,6 +59,103 @@ document.addEventListener('DOMContentLoaded', function() {
     const backButton = document.getElementById('backButton');
     const candidateDetails = document.getElementById('candidateDetails');
     const technologiesList = document.getElementById('technologiesList');
+    const startInterviewButton = document.getElementById('startInterviewButton');
+    
+    // Глобальная переменная для хранения данных резюме
+    window.resumeData = null;
+    
+    // Деактивируем кнопку собеседования до загрузки данных
+    if (startInterviewButton) {
+        startInterviewButton.disabled = true;
+    }
+    
+    // Обработчик для кнопки "Начать собеседование"
+    if (startInterviewButton) {
+        startInterviewButton.addEventListener('click', function() {
+            if (!window.resumeData) {
+                alert('Сначала загрузите резюме');
+                return;
+            }
+            
+            // Сохраняем данные для собеседования в localStorage
+            let interviewData = [];
+            const data = window.resumeData;
+            
+            try {
+                console.log('Данные резюме:', data);
+                
+                // Извлекаем вопросы из данных резюме
+                interviewData = [];
+                
+                if (data.questions_by_technology && Array.isArray(data.questions_by_technology)) {
+                    console.log('Найдены вопросы в формате questions_by_technology');
+                    
+                    // Обрабатываем вопросы из questions_by_technology (формат из модели CandidateProfile)
+                    data.questions_by_technology.forEach(tech => {
+                        const technology = tech.name_technology || 'Неизвестная технология';
+                        
+                        // Собираем вопросы из полей question1, question2, ...
+                        for (let i = 1; i <= 5; i++) {
+                            const questionKey = `question${i}`;
+                            if (tech[questionKey] && typeof tech[questionKey] === 'string') {
+                                interviewData.push({
+                                    technology: technology,
+                                    question: tech[questionKey],
+                                    answer: '',
+                                    questionNumber: i
+                                });
+                            }
+                        }
+                    });
+                    
+                    console.log('Извлечено вопросов:', interviewData.length);
+                } else {
+                    console.error('Не найдены вопросы в формате questions_by_technology');
+                    alert('Не удалось найти вопросы для собеседования в результатах анализа резюме');
+                    return;
+                }
+                
+                if (interviewData.length === 0) {
+                    alert('Не найдены вопросы для собеседования');
+                    return;
+                }
+                
+                // Сохраняем данные кандидата для отображения на странице собеседования
+                const candidateInfo = {
+                    name: data.name || data.full_name || data.candidate_name || 'Кандидат',
+                    position: data.position || data.desired_position || data.candidate_position || 'Позиция не указана'
+                };
+                
+                // Сохраняем полные данные анализа резюме
+                localStorage.setItem('resumeAnalysisData', JSON.stringify(data));
+                
+                try {
+                    // Полностью очищаем localStorage перед сохранением новых данных
+                    localStorage.clear();
+                    
+                    // Сохраняем данные в localStorage
+                    localStorage.setItem('candidateInfo', JSON.stringify(candidateInfo));
+                    localStorage.setItem('interviewData', JSON.stringify(interviewData));
+                    localStorage.setItem('resumeAnalysisData', JSON.stringify(data));
+                    
+                    console.log('Данные сохранены в localStorage:', 
+                                'candidateInfo:', JSON.stringify(candidateInfo),
+                                'interviewData:', JSON.stringify(interviewData).substring(0, 100) + '...');
+                    
+                    // Добавляем задержку перед переходом на страницу собеседования
+                    setTimeout(() => {
+                        window.location.href = 'interview.html';
+                    }, 100);
+                } catch (storageError) {
+                    console.error('Ошибка при сохранении в localStorage:', storageError);
+                    alert('Не удалось сохранить данные для собеседования. Проверьте настройки приватности браузера.');
+                }
+            } catch (error) {
+                console.error('Ошибка при подготовке данных для собеседования:', error);
+                alert('Произошла ошибка при подготовке собеседования. Пожалуйста, попробуйте еще раз.');
+            }
+        });
+    }
     
     // Обработка выбора файла
     resumeFile.addEventListener('change', function() {
@@ -61,18 +209,23 @@ document.addEventListener('DOMContentLoaded', function() {
             displayCandidateInfo(data);
             
             // Отображаем технологии и вопросы
-            if (data.technology_questions) {
-                displayTechnologies(data.technology_questions);
-            } else if (data.questions_by_technology) {
+            if (data.questions_by_technology && Array.isArray(data.questions_by_technology)) {
                 displayTechnologies(data.questions_by_technology);
-            } else if (data.technologys && Array.isArray(data.technologys)) {
-                // Если есть массив технологий, но нет вопросов в нужном формате
-                console.log('Найден массив технологий:', data.technologys);
-                technologiesList.innerHTML = '<p>Найдены технологии, но вопросы не в ожидаемом формате</p>';
             } else {
-                console.error('Отсутствуют поля technology_questions или questions_by_technology в ответе');
+                console.error('Отсутствует поле questions_by_technology в ответе');
                 technologiesList.innerHTML = '<p>Технологии не найдены в ответе</p>';
             }
+            
+            // Сохраняем данные в глобальной переменной для доступа из обработчика кнопки
+            window.resumeData = data;
+            
+            // Активируем кнопку "Начать собеседование"
+            const startInterviewButton = document.getElementById('startInterviewButton');
+            if (startInterviewButton) {
+                startInterviewButton.disabled = false;
+            }
+            
+            
         })
         .catch(error => {
             console.error('Ошибка:', error);
@@ -89,6 +242,7 @@ document.addEventListener('DOMContentLoaded', function() {
         resumeFile.value = '';
         fileName.textContent = '';
     });
+    
     
     
     // Функция для отображения информации о кандидате
@@ -161,16 +315,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Собираем вопросы из разных возможных форматов
                 const questions = [];
                 
-                // Вариант 1: массив вопросов в поле questions
-                if (Array.isArray(tech.questions)) {
-                    tech.questions.forEach(q => questions.push(q));
-                } 
-                // Вариант 2: вопросы в полях question1, question2, ...
-                else {
-                    for (const key in tech) {
-                        if (key.startsWith('question') && typeof tech[key] === 'string') {
-                            questions.push(tech[key]);
-                        }
+                // Вопросы в полях question1, question2, ...
+                for (let i = 1; i <= 5; i++) {
+                    const key = `question${i}`;
+                    if (tech[key] && typeof tech[key] === 'string') {
+                        questions.push(tech[key]);
                     }
                 }
                 
@@ -214,4 +363,5 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
+    
 });
