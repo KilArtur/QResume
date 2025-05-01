@@ -25,6 +25,7 @@ async def process_resume(file: UploadFile = File(...)):
         result, input_token, output_token = await ocr_service.process_file(temp_file_path)
         
         log.info(f"Файл успешно обработан. Использовано токенов: вход={input_token}, выход={output_token}")
+        log.info(f"Результат обработки: {result}")
         
         os.unlink(temp_file_path)
         

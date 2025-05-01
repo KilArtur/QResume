@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QResume</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>QResume</h1>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html" class="active">Главная</a></li>
+                    <li><a href="about.html">О проекте</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main>
+            <section class="welcome">
+                <h2>Добро пожаловать в QResume!</h2>
+                <p>Загрузите ваше резюме для анализа и получите список технологий и вопросов для собеседования.</p>
+                
+                <div class="upload-container">
+                    <form id="resumeForm" enctype="multipart/form-data">
+                        <div class="file-input-container">
+                            <input type="file" id="resumeFile" name="file" accept=".pdf,.doc,.docx">
+                            <label for="resumeFile" class="file-label">
+                                <span class="file-icon">📄</span>
+                                <span class="file-text">Выберите файл</span>
+                            </label>
+                            <span id="fileName" class="file-name"></span>
+                        </div>
+                        <button type="submit" class="submit-btn">Отправить резюме</button>
+                    </form>
+                </div>
+            </section>
+            
+            <section id="loadingSection" class="loading-section hidden">
+                <div class="loader"></div>
+                <p>Анализируем ваше резюме...</p>
+            </section>
+            
+            <section id="resultsSection" class="results-section hidden">
+                <h2>Результаты анализа</h2>
+                <div id="candidateInfo" class="candidate-info">
+                    <h3>Информация о кандидате</h3>
+                    <div id="candidateDetails"></div>
+                </div>
+                
+                <div id="technologiesContainer" class="technologies-container">
+                    <h3>Технологии и вопросы для собеседования</h3>
+                    <div id="technologiesList"></div>
+                </div>
+                
+                <button id="backButton" class="back-btn">Вернуться</button>
+            </section>
+        </main>
+        <footer>
+            <p>&copy; 2025 QResume</p>
+        </footer>
+    </div>
+    
+    <script src="js/main.js"></script>
+</body>
+</html>
